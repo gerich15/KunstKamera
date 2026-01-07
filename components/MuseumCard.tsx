@@ -13,9 +13,13 @@ interface MuseumCardProps {
 }
 
 export function MuseumCard({ museum, isOwner = false }: MuseumCardProps) {
+  // Безопасная обработка profiles (может быть объектом или массивом)
+  const profile = Array.isArray(museum.profiles) ? museum.profiles[0] : museum.profiles
+  const username = profile?.username || museum.user_id
+  
   const href = isOwner
     ? `/museum/${museum.id}`
-    : `/public/${museum.profiles?.username || museum.user_id}/${museum.slug}`
+    : `/public/${username}/${museum.slug}`
 
   return (
     <Link href={href}>
@@ -57,5 +61,4 @@ export function MuseumCard({ museum, isOwner = false }: MuseumCardProps) {
     </Link>
   )
 }
-
 
