@@ -216,17 +216,21 @@ export function FileUploader({
           uploadData: uploadData ? 'Success' : 'No data', 
           uploadError: uploadError ? {
             message: uploadError.message,
-            statusCode: uploadError.statusCode,
+            statusCode: (uploadError as any)?.statusCode ?? (uploadError as any)?.status ?? null,
             name: uploadError.name
           } : null
         })
 
         if (uploadError) {
+          // Безопасное получение statusCode из ошибки
+          const errorStatusCode = (uploadError as any)?.statusCode ?? (uploadError as any)?.status ?? null
+          
           console.error('Upload error details:', {
             message: uploadError.message,
-            statusCode: uploadError.statusCode,
+            statusCode: errorStatusCode,
             error: uploadError
           })
+          
           // Более понятные сообщения об ошибках
           if (uploadError.message?.includes('new row violates row-level security') || 
               uploadError.message?.includes('row-level security')) {
@@ -235,10 +239,10 @@ export function FileUploader({
           if (uploadError.message?.includes('Bucket not found')) {
             throw new Error(`Bucket "${bucket}" не найден. Создайте его в Supabase Storage.`)
           }
-          if (uploadError.statusCode === '400') {
+          if (errorStatusCode === 400 || errorStatusCode === '400') {
             throw new Error(`Ошибка загрузки (400): ${uploadError.message || 'Проверьте политики Storage и права доступа'}`)
           }
-          if (uploadError.statusCode === '403') {
+          if (errorStatusCode === 403 || errorStatusCode === '403') {
             throw new Error(`Нет прав доступа (403): ${uploadError.message || 'Проверьте политики Storage в Supabase'}`)
           }
           throw new Error(uploadError.message || 'Ошибка загрузки файла')
