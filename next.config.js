@@ -14,14 +14,6 @@ const nextConfig = {
   // Оптимизация производительности
   compress: true,
   poweredByHeader: false,
-  // Экспериментальные функции
-  experimental: {
-    optimizeCss: true,
-  },
-  // Кэширование
-  onDemandRevalidation: {
-    maxDuration: 60,
-  },
 }
 
 module.exports = nextConfig
