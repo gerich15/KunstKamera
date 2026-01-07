@@ -1,0 +1,56 @@
+import { MetadataRoute } from 'next'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  
+  const sitemapEntries: MetadataRoute.Sitemap = [
+    {
+      url: baseUrl,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 1,
+    },
+    {
+      url: `${baseUrl}/login`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.5,
+    },
+  ]
+
+  try {
+    // Получаем все публичные музеи
+    const supabase = createSupabaseServerClient()
+    const { data: museums } = await supabase
+      .from('museums')
+      .select(`
+        slug,
+        updated_at,
+        profiles:user_id (
+          username
+        )
+      `)
+      .eq('is_public', true)
+      .order('updated_at', { ascending: false })
+      .limit(1000) // Ограничение для производительности
+
+    if (museums) {
+      museums.forEach((museum) => {
+        if (museum.profiles?.username) {
+          sitemapEntries.push({
+            url: `${baseUrl}/public/${museum.profiles.username}/${museum.slug}`,
+            lastModified: new Date(museum.updated_at),
+            changeFrequency: 'weekly',
+            priority: 0.8,
+          })
+        }
+      })
+    }
+  } catch (error) {
+    console.error('Error generating sitemap:', error)
+  }
+
+  return sitemapEntries
+}
+
