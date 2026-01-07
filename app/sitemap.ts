@@ -36,10 +36,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .limit(1000) // Ограничение для производительности
 
     if (museums) {
-      museums.forEach((museum) => {
-        if (museum.profiles?.username) {
+      museums.forEach((museum: any) => {
+        // Обрабатываем profiles как массив или объект
+        const profile = Array.isArray(museum.profiles) 
+          ? museum.profiles[0] 
+          : museum.profiles
+        
+        if (profile?.username) {
           sitemapEntries.push({
-            url: `${baseUrl}/public/${museum.profiles.username}/${museum.slug}`,
+            url: `${baseUrl}/public/${profile.username}/${museum.slug}`,
             lastModified: new Date(museum.updated_at),
             changeFrequency: 'weekly',
             priority: 0.8,
@@ -53,4 +58,3 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return sitemapEntries
 }
-
