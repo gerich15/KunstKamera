@@ -4,9 +4,11 @@ import { ArtifactCard } from '@/components/ArtifactCard'
 import Masonry from 'react-masonry-css'
 import type { Artifact } from '@/types'
 
+type LayoutType = 'list' | 'grid' | 'masonry'
+
 interface MuseumArtifactsClientProps {
   artifacts: Artifact[]
-  layoutType: string
+  layoutType: LayoutType
 }
 
 export function MuseumArtifactsClient({
