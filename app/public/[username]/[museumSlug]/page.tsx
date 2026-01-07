@@ -69,7 +69,11 @@ export async function generateMetadata({
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
   const url = `${siteUrl}/public/${params.username}/${params.museumSlug}`
   const title = `${museum.title} | Kunstkamera`
-  const description = museum.description || `Коллекция цифровых артефактов от ${museum.profiles?.full_name || museum.profiles?.username || 'пользователя'}`
+  
+  // Безопасная обработка profiles (может быть объектом или массивом)
+  const profile = Array.isArray(museum.profiles) ? museum.profiles[0] : museum.profiles
+  const authorName = profile?.full_name || profile?.username || 'пользователя'
+  const description = museum.description || `Коллекция цифровых артефактов от ${authorName}`
   const image = museum.cover_image_url || `${siteUrl}/og-image.png`
 
   return {
@@ -96,6 +100,7 @@ export async function generateMetadata({
       title,
       description,
       images: [image],
+      creator: profile?.username ? `@${profile.username}` : undefined,
     },
     alternates: {
       canonical: url,
@@ -140,11 +145,14 @@ export default async function PublicMuseumPage({
                   {museum.description}
                 </p>
               )}
-              {museum.profiles && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  Создано {museum.profiles.full_name || museum.profiles.username}
-                </p>
-              )}
+              {(() => {
+                const profile = Array.isArray(museum.profiles) ? museum.profiles[0] : museum.profiles
+                return profile && (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Создано {profile.full_name || profile.username}
+                  </p>
+                )
+              })()}
             </div>
             <div className="flex gap-2">
               <ShareButtonClient
@@ -167,4 +175,5 @@ export default async function PublicMuseumPage({
     </div>
   )
 }
+
 
