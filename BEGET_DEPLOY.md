@@ -54,17 +54,21 @@ nano .env.local
 Добавьте следующие переменные:
 
 ```env
-# Обязательные переменные
+# ✅ ОБЯЗАТЕЛЬНО для работы приложения
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
 
-# Рекомендуется (для OAuth редиректов и SEO)
+# ⚠️ РЕКОМЕНДУЕТСЯ (для OAuth редиректов и SEO)
 NEXT_PUBLIC_SITE_URL=https://your-domain.com
 
-# Для production
+# 🔧 Для production
 NODE_ENV=production
 PORT=3000
 ```
+
+**Важно:** 
+- Первые две переменные (`NEXT_PUBLIC_SUPABASE_URL` и `NEXT_PUBLIC_SUPABASE_ANON_KEY`) **ОБЯЗАТЕЛЬНЫ** - без них приложение не будет работать
+- `NEXT_PUBLIC_SITE_URL` должен быть вашим реальным доменом на Beget (не localhost!)
 
 **Где взять ключи Supabase:**
 1. Откройте [Supabase Dashboard](https://app.supabase.com)
