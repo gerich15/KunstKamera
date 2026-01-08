@@ -1,0 +1,138 @@
+// Prisma Schema для Kunstkamera
+// После миграции с Supabase
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Пользователи (NextAuth.js)
+model User {
+  id            String    @id @default(uuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?   // Хешированный пароль для Email/Password
+  accounts      Account[]
+  sessions      Session[]
+  profile       Profile?
+  museums       Museum[]
+  likes         Like[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// Аккаунты (для OAuth)
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+// Сессии (NextAuth.js)
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// Верификация email (NextAuth.js)
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Профили пользователей
+model Profile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  username  String?  @unique
+  fullName  String?  @map("full_name")
+  avatarUrl String?  @map("avatar_url")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@map("profiles")
+  @@index([username])
+}
+
+// Музеи
+model Museum {
+  id            String     @id @default(uuid())
+  userId        String     @map("user_id")
+  title         String
+  slug          String     @unique
+  description   String?
+  coverImageUrl String?    @map("cover_image_url")
+  isPublic      Boolean    @default(true) @map("is_public")
+  layoutType    String     @default("grid") @map("layout_type")
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  artifacts     Artifact[]
+  likes         Like[]
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+
+  @@map("museums")
+  @@index([userId])
+  @@index([slug])
+}
+
+// Экспонаты
+model Artifact {
+  id            String   @id @default(uuid())
+  museumId      String   @map("museum_id")
+  title         String
+  description   String?
+  artifactType  String   @map("artifact_type")
+  contentUrl    String?  @map("content_url")
+  fileMetadata  Json?    @map("file_metadata")
+  orderIndex    Int      @default(0) @map("order_index")
+  museum        Museum   @relation(fields: [museumId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("artifacts")
+  @@index([museumId])
+  @@index([museumId, orderIndex])
+}
+
+// Лайки
+model Like {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  museumId  String   @map("museum_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  museum    Museum   @relation(fields: [museumId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, museumId])
+  @@map("likes")
+  @@index([museumId])
+  @@index([userId])
+}
+

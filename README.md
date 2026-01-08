@@ -48,10 +48,15 @@ npm install
 Создайте файл `.env.local` в корне проекта:
 
 ```env
+# Обязательные
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# Рекомендуется
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
+
+# Опционально (только для админ-функций)
+# SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ```
 
 **⚠️ ВАЖНО**: Никогда не коммитьте `.env.local` в Git!
