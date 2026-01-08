@@ -31,6 +31,15 @@ yarn-error.log*
 # vercel
 .vercel
 
+# PM2
+logs/
+*.log
+.pm2/
+ecosystem.config.js.bak
+
+# Beget
+.htaccess.bak
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
