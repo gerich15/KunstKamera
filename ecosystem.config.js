@@ -10,6 +10,10 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: 3000,
+        // Добавьте ваши переменные окружения здесь ИЛИ используйте .env.local файл
+        // NEXT_PUBLIC_SUPABASE_URL: 'https://your-project.supabase.co',
+        // NEXT_PUBLIC_SUPABASE_ANON_KEY: 'your_anon_key_here',
+        // NEXT_PUBLIC_SITE_URL: 'https://your-domain.com',
       },
       error_file: './logs/err.log',
       out_file: './logs/out.log',

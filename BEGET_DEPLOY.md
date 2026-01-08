@@ -43,6 +43,8 @@ git clone https://github.com/gerich15/KunstKamera.git .
 
 ## 🔐 Шаг 2: Настройка переменных окружения
 
+### Вариант 1: Использование .env.local (рекомендуется)
+
 Создайте файл `.env.local` в корне проекта:
 
 ```bash
@@ -52,15 +54,14 @@ nano .env.local
 Добавьте следующие переменные:
 
 ```env
-# Supabase
+# Обязательные переменные
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
 
-# URL вашего сайта
+# Рекомендуется (для OAuth редиректов и SEO)
 NEXT_PUBLIC_SITE_URL=https://your-domain.com
 
-# Node.js
+# Для production
 NODE_ENV=production
 PORT=3000
 ```
@@ -72,9 +73,32 @@ PORT=3000
 4. Скопируйте:
    - **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
    - **anon public key** → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - **service_role secret key** → `SUPABASE_SERVICE_ROLE_KEY`
 
 Сохраните файл (Ctrl+O, Enter, Ctrl+X в nano).
+
+**Важно:** Next.js автоматически загрузит переменные из `.env.local` при запуске.
+
+### Вариант 2: Переменные в PM2 (альтернатива)
+
+Если не хотите использовать `.env.local`, можно добавить переменные напрямую в `ecosystem.config.js`:
+
+```bash
+nano ecosystem.config.js
+```
+
+Раскомментируйте и заполните переменные в секции `env`:
+
+```javascript
+env: {
+  NODE_ENV: 'production',
+  PORT: 3000,
+  NEXT_PUBLIC_SUPABASE_URL: 'https://your-project.supabase.co',
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: 'your_anon_key_here',
+  NEXT_PUBLIC_SITE_URL: 'https://your-domain.com',
+},
+```
+
+**Рекомендация:** Используйте `.env.local` - это проще и безопаснее (файл не попадет в Git).
 
 ---
 
